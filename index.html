@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Attendance Checklist</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      background-color: #f9f9f9;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      padding: 0.5rem 0;
+      font-size: 1.2rem;
+    }
+
+    label {
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Event Checklist</h1>
+  <ul id="checklist">
+    <!-- The checkboxes with names -->
+    <li><label><input type="checkbox" name="Amy" /> Amy</label></li>
+    <li><label><input type="checkbox" name="Evangelos" /> Evangelos</label></li>
+    <li><label><input type="checkbox" name="Elouise" /> Elouise</label></li>
+    <li><label><input type="checkbox" name="Jacob" /> Jacob</label></li>
+    <li><label><input type="checkbox" name="Jasmine" /> Jasmine</label></li>
+    <li><label><input type="checkbox" name="Connor" /> Connor</label></li>
+    <li><label><input type="checkbox" name="Matthias & Wilson" /> Matthias & Wilson</label></li>
+    <li><label><input type="checkbox" name="Kat" /> Kat</label></li>
+    <li><label><input type="checkbox" name="Jessica" /> Jessica</label></li>
+    <li><label><input type="checkbox" name="Mark" /> Mark</label></li>
+    <li><label><input type="checkbox" name="Barbie" /> Barbie</label></li>
+    <li><label><input type="checkbox" name="Elizabeth & Sim" /> Elizabeth & Sim</label></li>
+    <li><label><input type="checkbox" name="Patrick" /> Patrick</label></li>
+    <li><label><input type="checkbox" name="Daniel" /> Daniel</label></li>
+    <li><label><input type="checkbox" name="Dominic" /> Dominic</label></li>
+    <li><label><input type="checkbox" name="Ricardo" /> Ricardo</label></li>
+    <li><label><input type="checkbox" name="Tammie & George" /> Tammie & George</label></li>
+    <li><label><input type="checkbox" name="Mum" /> Mum</label></li>
+    <li><label><input type="checkbox" name="Chie" /> Chie</label></li>
+    <li><label><input type="checkbox" name="Stella" /> Stella</label></li>
+    <li><label><input type="checkbox" name="Mamu & Adam" /> Mamu & Adam</label></li>
+    <li><label><input type="checkbox" name="Rodrigo & Enzo" /> Rodrigo & Enzo</label></li>
+    <li><label><input type="checkbox" name="Cariza" /> Cariza</label></li>
+    <li><label><input type="checkbox" name="Jomel" /> Jomel</label></li>
+    <li><label><input type="checkbox" name="Mean" /> Mean</label></li>
+    <li><label><input type="checkbox" name="Megan" /> Megan</label></li>
+    <li><label><input type="checkbox" name="Bev" /> Bev</label></li>
+    <li><label><input type="checkbox" name="Cha" /> Cha</label></li>
+    <li><label><input type="checkbox" name="Kz" /> Kz</label></li>
+    <li><label><input type="checkbox" name="Renz" /> Renz</label></li>
+    <li><label><input type="checkbox" name="Charles" /> Charles</label></li>
+    <li><label><input type="checkbox" name="Val" /> Val</label></li>
+  </ul>
+
+  <script>
+    // Web App URL
+    const webAppUrl = "https://script.google.com/macros/s/AKfycbzYKQdD3eiVSESn1vfzqmv2_pMV8wW2Y5BTld435ZG3ss-pkx5fI5Ny932tS3lc0cc/exec";
+
+    // Add change event listeners to all checkboxes
+    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+      checkbox.addEventListener('change', () => {
+        const name = checkbox.name;
+        const printed = checkbox.checked;
+
+        // Send data to Google Apps Script
+        fetch(`${webAppUrl}?name=${encodeURIComponent(name)}&printed=${printed}`, {
+          method: "GET",
+        })
+        .then(res => res.text())
+        .then(result => {
+          console.log(`Updated ${name}: ${printed}`);
+        })
+        .catch(error => {
+          console.error("Error updating status:", error);
+        });
+      });
+    });
+  </script>
+</body>
+</html>
