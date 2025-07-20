@@ -5,14 +5,12 @@
   <title>Checklist</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: sans-serif;
       padding: 20px;
     }
-    h1 {
-      color: #333;
-    }
-    .name-item {
-      margin-bottom: 10px;
+    label {
+      display: block;
+      margin: 10px 0;
     }
   </style>
 </head>
@@ -21,47 +19,47 @@
   <div id="checklist"></div>
 
   <script>
+    // Add your list of names here
     const names = [
-      "Amy", "Evangelos", "Elouise", "Jacob", "Jasmine", "Connor",
-      "Matthias & Wilson", "Kat", "Jessica", "Mark", "Barbie", "Elizabeth & Sim",
-      "Patrick", "Daniel", "Dominic", "Ricardo", "Tammie & George", "Mum",
-      "Chie", "Stella", "Mamu & Adam", "Rodrigo & Enzo", "Cariza", "Jomel",
-      "Mean", "Megan", "Bev", "Cha", "Kz", "Renz", "Charles", "Val"
+      "Harry Potter",
+      "Hermione Granger",
+      "Ron Weasley",
+      "Draco Malfoy",
+      "Luna Lovegood"
     ];
 
-    const container = document.getElementById('checklist');
+    const checklist = document.getElementById("checklist");
+    const scriptURL = "https://script.google.com/macros/s/AKfycbzYKQdD3eiVSESn1vfzqmv2_pMV8wW2Y5BTld435ZG3ss-pkx5fI5Ny932tS3lc0cc/exec";
 
     names.forEach(name => {
-      const div = document.createElement('div');
-      div.className = 'name-item';
+      const label = document.createElement("label");
+      label.innerHTML = `
+        <input type="checkbox" onchange="updateStatus('${name}', this.checked)">
+        ${name}
+      `;
+      checklist.appendChild(label);
+    });
 
-      const label = document.createElement('label');
-      label.textContent = name;
+    async function updateStatus(name, checked) {
+      const payload = {
+        name: name,
+        printed: checked ? "TRUE" : "FALSE"
+      };
 
-      const checkbox = document.createElement('input');
-      checkbox.type = 'checkbox';
-      checkbox.addEventListener('change', () => {
-        const checked = checkbox.checked ? "yes" : "no";
-        fetch("https://script.google.com/macros/s/AKfycbzYKQdD3eiVSESn1vfzqmv2_pMV8wW2Y5BTld435ZG3ss-pkx5fI5Ny932tS3lc0cc/exec", {
+      try {
+        const response = await fetch(scriptURL, {
           method: "POST",
-          mode: "no-cors",
+          mode: "no-cors", // prevents CORS error popup
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify({
-            name: name,
-            attending: checked
-          })
-        }).catch(err => {
-          console.error("Error sending data:", err);
-          alert("Failed to update checklist. Please try again.");
+          body: JSON.stringify(payload)
         });
-      });
-
-      div.appendChild(checkbox);
-      div.appendChild(label);
-      container.appendChild(div);
-    });
+        console.log("Updated:", name, checked);
+      } catch (error) {
+        alert("Error: " + error.message);
+      }
+    }
   </script>
 </body>
 </html>
