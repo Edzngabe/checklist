@@ -1,68 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Event Checklist</title>
+  <meta charset="UTF-8">
+  <title>Checklist</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      padding: 2rem;
-      background: #f0f0f0;
+      padding: 20px;
     }
     h1 {
-      text-align: center;
       color: #333;
     }
-    ul {
-      list-style: none;
-      padding: 0;
-    }
-    li {
-      background: white;
-      margin: 10px 0;
-      padding: 1rem;
-      border-radius: 5px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    .name-item {
+      margin-bottom: 10px;
     }
   </style>
 </head>
 <body>
   <h1>Checklist</h1>
-  <ul id="checklist"></ul>
+  <div id="checklist"></div>
 
   <script>
     const names = [
       "Amy", "Evangelos", "Elouise", "Jacob", "Jasmine", "Connor",
       "Matthias & Wilson", "Kat", "Jessica", "Mark", "Barbie", "Elizabeth & Sim",
-      "Patrick", "Daniel", "Dominic", "Ricardo", "Tammie & George", "Mum", "Chie",
-      "Stella", "Mamu & Adam", "Rodrigo & Enzo", "Cariza", "Jomel", "Mean", "Megan",
-      "Bev", "Cha", "Kz", "Renz", "Charles", "Val"
+      "Patrick", "Daniel", "Dominic", "Ricardo", "Tammie & George", "Mum",
+      "Chie", "Stella", "Mamu & Adam", "Rodrigo & Enzo", "Cariza", "Jomel",
+      "Mean", "Megan", "Bev", "Cha", "Kz", "Renz", "Charles", "Val"
     ];
 
-    const checklist = document.getElementById('checklist');
+    const container = document.getElementById('checklist');
 
     names.forEach(name => {
-      const li = document.createElement('li');
-      li.innerHTML = `
-        <span>${name}</span>
-        <input type="checkbox" onchange="handleCheck('${name}', this.checked)">
-      `;
-      checklist.appendChild(li);
-    });
+      const div = document.createElement('div');
+      div.className = 'name-item';
 
-    function handleCheck(name, checked) {
-      const url = "https://script.google.com/macros/s/AKfycbzYKQdD3eiVSESn1vfzqmv2_pMV8wW2Y5BTld435ZG3ss-pkx5fI5Ny932tS3lc0cc/exec";
-      fetch(`${url}?name=${encodeURIComponent(name)}&printed=${checked}`)
-        .then(res => {
-          if (!res.ok) throw new Error("Failed to update sheet");
-          console.log(`Updated ${name}: ${checked}`);
-        })
-        .catch(err => alert("Error: " + err));
-    }
+      const label = document.createElement('label');
+      label.textContent = name;
+
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.addEventListener('change', () => {
+        const checked = checkbox.checked ? "yes" : "no";
+        fetch("https://script.google.com/macros/s/AKfycbzYKQdD3eiVSESn1vfzqmv2_pMV8wW2Y5BTld435ZG3ss-pkx5fI5Ny932tS3lc0cc/exec", {
+          method: "POST",
+          mode: "no-cors",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            name: name,
+            attending: checked
+          })
+        }).catch(err => {
+          console.error("Error sending data:", err);
+          alert("Failed to update checklist. Please try again.");
+        });
+      });
+
+      div.appendChild(checkbox);
+      div.appendChild(label);
+      container.appendChild(div);
+    });
   </script>
 </body>
 </html>
