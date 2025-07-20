@@ -1,65 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Checklist</title>
+  <meta charset="UTF-8" />
+  <title>Guest Checklist</title>
   <style>
     body {
-      font-family: sans-serif;
+      font-family: Arial, sans-serif;
       padding: 20px;
+      max-width: 400px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
     }
     label {
       display: block;
-      margin: 10px 0;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+    input[type="checkbox"] {
+      transform: scale(1.3);
+      margin-right: 10px;
     }
   </style>
 </head>
 <body>
-  <h1>Checklist</h1>
+
+  <h1>Guest Invitation Checklist</h1>
+
   <div id="checklist"></div>
 
   <script>
-    // Add your list of names here
-    const names = [
-      "Harry Potter",
-      "Hermione Granger",
-      "Ron Weasley",
-      "Draco Malfoy",
-      "Luna Lovegood"
-    ];
-
-    const checklist = document.getElementById("checklist");
+    // Your Google Apps Script Web App URL
     const scriptURL = "https://script.google.com/macros/s/AKfycbzYKQdD3eiVSESn1vfzqmv2_pMV8wW2Y5BTld435ZG3ss-pkx5fI5Ny932tS3lc0cc/exec";
 
-    names.forEach(name => {
-      const label = document.createElement("label");
-      label.innerHTML = `
-        <input type="checkbox" onchange="updateStatus('${name}', this.checked)">
-        ${name}
-      `;
-      checklist.appendChild(label);
-    });
+    // Fetch the names and printed status from your Google Sheet via doGet()
+    fetch(scriptURL)
+      .then(response => response.json())
+      .then(data => {
+        const checklist = document.getElementById('checklist');
 
-    async function updateStatus(name, checked) {
-      const payload = {
-        name: name,
-        printed: checked ? "TRUE" : "FALSE"
-      };
+        data.forEach(row => {
+          const name = row[0];
+          const printed = row[1];
+          const isChecked = printed === true || printed === 'TRUE' || printed === 'Yes' || printed === 'Printed';
 
-      try {
-        const response = await fetch(scriptURL, {
-          method: "POST",
-          mode: "no-cors", // prevents CORS error popup
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(payload)
+          const label = document.createElement('label');
+          label.innerHTML = `
+            <input type="checkbox" ${isChecked ? 'checked' : ''}>
+            ${name}
+          `;
+
+          const checkbox = label.querySelector('input');
+
+          // On checkbox change, send POST request to update printed status
+          checkbox.addEventListener('change', () => {
+            const printedStatus = checkbox.checked ? 'Printed' : 'Not Printed';
+
+            fetch(scriptURL, {
+              method: 'POST',
+              mode: 'no-cors',  // Avoids CORS errors, but no response
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ name: name, printed: printedStatus }),
+            }).catch(err => {
+              alert('Failed to update status: ' + err.message);
+            });
+          });
+
+          checklist.appendChild(label);
         });
-        console.log("Updated:", name, checked);
-      } catch (error) {
-        alert("Error: " + error.message);
-      }
-    }
+      })
+      .catch(error => {
+        alert('Failed to load checklist data: ' + error.message);
+      });
   </script>
+
 </body>
 </html>
